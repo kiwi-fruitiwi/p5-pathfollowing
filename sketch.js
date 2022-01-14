@@ -12,7 +12,10 @@
  * a vehicle's desired velocity should be a vector pointing to its target,
  * magnitude set to max_speed.
  *
- * TODO: come up with coding plan starting from scratch.
+ * TODO:
+ *  come up with coding plan starting from scratch
+ *  evade
+ *  pursuit based on predicting target pos next frame based on its vel
  */
 
 class Vehicle {
@@ -21,6 +24,7 @@ class Vehicle {
         this.vel = new p5.Vector()
         this.acc = new p5.Vector()
 
+        this.max_force = 0.2
         this.max_speed = 4
         this.r = 12
     }
@@ -31,6 +35,8 @@ class Vehicle {
         desired_velocity.setMag(this.max_speed)
         let steering = p5.Vector.sub(desired_velocity, this.vel)
 
+        /* make seeking more realistic by limiting acceleration */
+        steering.limit(this.max_force)
         this.applyForce(steering)
     }
 
@@ -40,6 +46,7 @@ class Vehicle {
 
     update() {
         this.vel.add(this.acc)
+        this.vel.limit(this.max_speed)
         this.pos.add(this.vel)
         this.acc.mult(0)
     }
