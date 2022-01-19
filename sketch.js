@@ -52,7 +52,9 @@ class Vehicle {
     }
 
     render() {
-        noStroke()
+        stroke(90, 0, 100, 100)
+        strokeWeight(4)
+        strokeJoin(ROUND)
         fill(0, 0, 100) // white
         push()
         translate(this.pos.x, this.pos.y)
@@ -61,12 +63,27 @@ class Vehicle {
         /* make a triangle with math */
         let s = this.r
         triangle(
-            -s, -s/1.3,
-            -s, s/1.3,
+            -s, -s / 1.3,
+            -s, s / 1.3,
             s, 0
         );
 
         pop()
+    }
+
+
+    /**
+     *  a simple edges function that does not take radius into account
+     */
+    edges() {
+        if (this.pos.x > width) /* wrap when hitting right boundary */
+            this.pos.x = 0
+        else if (this.pos.x < 0) /* wrap when hitting left boundary */
+            this.pos.x = width
+        else if (this.pos.y > height) /* wrap when hitting bottom boundary */
+            this.pos.y = 0
+        else if (this.pos.y < 0) /* wrap when hitting top boundary */
+            this.pos.y = height
     }
 }
 
@@ -86,14 +103,17 @@ function setup() {
     noCursor()
 }
 
-function draw() {    
+function draw() {
     background(234, 34, 24)
 
     target = new p5.Vector(mouseX, mouseY)
     fill(201, 96, 83)
+
+    strokeWeight(2)
     circle(target.x, target.y, 32)
 
     vehicle.seek(target)
     vehicle.update()
+    vehicle.edges()
     vehicle.render()
 }
