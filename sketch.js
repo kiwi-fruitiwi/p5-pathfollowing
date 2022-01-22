@@ -50,7 +50,10 @@ function draw() {
     target = new p5.Vector(mouseX, mouseY)
     circle(target.x, target.y, 32)
 
-    vehicle.seek(target)
+    let force = vehicle.follow(path)
+    vehicle.applyForce(force)
+
+    // vehicle.seek(target)
     vehicle.update()
     vehicle.edges()
     vehicle.render()
