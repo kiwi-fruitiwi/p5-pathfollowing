@@ -1,3 +1,23 @@
+/**
+ * v1 is future-start
+ * v2 is end-start
+ *
+ * @param start start of our path. the vertex of the angle between future,
+ * start, and end;
+ * @param future vehicle position
+ * @param end end of the path
+ *
+ * @return the projected point
+ */
+function findProjection(start, future, end) {
+    let v1 = p5.Vector.sub(future, start)
+    let v2 = p5.Vector.sub(end, start)
+    v2.normalize()
+    let scalarProjection = v1.dot(v2)
+    v2.mult(scalarProjection)
+    v2.add(start)
+    return v2
+}
 
 class Vehicle {
     constructor(x, y) {
@@ -10,6 +30,12 @@ class Vehicle {
         this.r = 12
     }
 
+
+    /**
+     *
+     * @param target
+     * @returns {*} a steering force p5.Vector!
+     */
     seek(target) {
         // our desired velocity is straight at our target from our origin!
         let desired_velocity = p5.Vector.sub(target, this.pos)
@@ -18,12 +44,41 @@ class Vehicle {
 
         /* make seeking more realistic by limiting acceleration */
         steering.limit(this.max_force)
-        this.applyForce(steering)
+        return steering
     }
+
+
+    /**
+     * 1. predict the future position: fpos, of the vehicle
+     * 2. is fpos on the path? calculate distance between point and line
+     *      if distance d is less than the path radius, do nothing
+     *      else we're off the path
+     * 3. find projection point: target
+     * 4. seek this target :3
+     * @param path
+     */
+    follow(path) {
+        let futurePos = this.vel.copy()
+        futurePos.mult(50)
+        futurePos.add(this.pos) // where will we be in the future?
+
+        fill(0, 100, 70, 30) // a transparent red
+        noStroke()
+        circle(futurePos.x, futurePos.y, 16)
+
+        /* step 2. is futurePos on our path? */
+        let target = findProjection(path.start, futurePos, path.end)
+        fill(90, 100, 80, 40)
+        circle(target.x, target.y, 16)
+
+        return this.seek(futurePos)
+    }
+
 
     applyForce(force) {
         this.acc.add(force)
     }
+
 
     update() {
         this.vel.add(this.acc)
@@ -31,6 +86,7 @@ class Vehicle {
         this.pos.add(this.vel)
         this.acc.mult(0)
     }
+
 
     render() {
         stroke(90, 0, 100, 100)

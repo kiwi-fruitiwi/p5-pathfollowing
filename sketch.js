@@ -39,7 +39,7 @@ function setup() {
 
     vehicle = new Vehicle(100, 100)
     path = new Path(0, 200, width, 200)
-
+    vehicle.vel.x = 2
 }
 
 function draw() {
@@ -47,15 +47,15 @@ function draw() {
     fill(201, 96, 83)
     strokeWeight(2)
 
-    target = new p5.Vector(mouseX, mouseY)
-    circle(target.x, target.y, 32)
+    // target = new p5.Vector(mouseX, mouseY)
+    // circle(target.x, target.y, 32)
 
     let force = vehicle.follow(path)
     vehicle.applyForce(force)
 
     // vehicle.seek(target)
-    vehicle.update()
     vehicle.edges()
+    vehicle.update()
     vehicle.render()
 
     path.render()
