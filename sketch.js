@@ -14,6 +14,8 @@
  *
  *
  * TODO:
+ *  a vehicle pursuing the one following the path
+ *  groups of vehicles following path
  *
  *  complex paths with line segments → bezier curves
  *      https://editor.p5js.org/codingtrain/sketches/2FFzvxwVt
@@ -28,12 +30,32 @@
  *      render() → make a vertex for each point in points []
  *          beginShape → endShape
  *
- *  in sketch.js:
+ *  in sketch.js
  *      iterate through each vehicle. apply follow(path), separate(v's)
  *      debug drawings based on const DEBUG
  *
- *  a vehicle pursuing the one following the path
- *  groups of vehicles following path
+ *  in vehicle.js
+ *      predicted position in 25 frames
+ *      normal, target, worldRecord (min of distances to all projected points?)
+ *      look through all pairs of adjacent points in a path:
+ *          note that path must wrap around
+ *          get normal point to that line with scalarProjection
+ *              predictedPosition projected onto vector.sub(b, a)
+ *              this is a vector from a to b on the path line
+ *          check to see if the normal is within the line segment: x, y
+ *          keep track of shortest distance to any projected point
+ *      seek the closest projected point, our target
+ *      but draw some DEBUG info first
+ *
+ *  add separate behavior to vehicle.js
+ *      loop across all other boids
+ *          if distance between our boid and looped boid is bigger than
+ *          desired distance:
+ *              create vector pointing away from neighboring boid
+ *              weigh these by their distance
+ *              divide by total number of neighbors to get average sep force
+ *              applyForce after normalize, mult(maxSpeed), limit maxForce
+ *              if magnitude > 0
  */
 
 
