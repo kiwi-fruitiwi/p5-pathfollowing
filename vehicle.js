@@ -1,6 +1,5 @@
 /**
- * v1 is future-start
- * v2 is end-start
+ * Returns the projected point between future and [start, end]
  *
  * @param start start of our path. the vertex of the angle between future,
  * start, and end;
@@ -10,9 +9,15 @@
  * @return the projected point
  */
 function findProjection(start, future, end) {
+    /* vector from start to future */
     let v1 = p5.Vector.sub(future, start)
+
+    /* vector from start to end */
     let v2 = p5.Vector.sub(end, start)
+
+    /* the dot product formula is easier if we normalize the 2nd vector */
     v2.normalize()
+
     let scalarProjection = v1.dot(v2)
     v2.mult(scalarProjection)
     v2.add(start)
@@ -25,7 +30,7 @@ class Vehicle {
         this.vel = new p5.Vector()
         this.acc = new p5.Vector()
 
-        this.max_force = 0.2
+        this.max_force = 0.1
         this.max_speed = 4
         this.r = 12
     }
@@ -59,19 +64,24 @@ class Vehicle {
      */
     follow(path) {
         let futurePos = this.vel.copy()
-        futurePos.mult(50)
+        futurePos.mult(20)
         futurePos.add(this.pos) // where will we be in the future?
 
         fill(0, 100, 70, 30) // a transparent red
-        noStroke()
         circle(futurePos.x, futurePos.y, 16)
 
-        /* step 2. is futurePos on our path? */
+        /* step 2. is futurePos on our path? target is our projection point */
         let target = findProjection(path.start, futurePos, path.end)
         fill(90, 100, 80, 40)
         circle(target.x, target.y, 16)
 
-        return this.seek(futurePos)
+        /* distance between our future position and our vector projection */
+        let dist = p5.Vector.dist(futurePos, target)
+
+        /* seek only if we're not already within the radius of the path */
+        if (dist > path.radius)
+            return this.seek(target)
+        else return new p5.Vector(0, 0)
     }
 
 

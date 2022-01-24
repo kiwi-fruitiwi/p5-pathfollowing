@@ -13,15 +13,27 @@
  * magnitude set to max_speed.
  *
  *
- * coding breadcrumbs
- *  move vehicle code into vehicle.js
- *  create path.js → render, constructor. add simple path in sketch.js
- *
- *
  * TODO:
- *  come up with coding plan starting from scratch
- *  evade
- *  pursuit based on predicting target pos next frame based on its vel
+ *
+ *  complex paths with line segments → bezier curves
+ *      https://editor.p5js.org/codingtrain/sketches/2FFzvxwVt
+ *      path following + separation in vehicle.applyBehaviors(vehicles, path)
+ *          constant k multiplier to these forces
+ *      in follow(path):
+ *          path needs to wrap around
+ *          getNormalPoint(predictPos, a, b) is just scalarProjection → vector
+ *
+ *  in path.js
+ *      strokeJoin(ROUND)
+ *      render() → make a vertex for each point in points []
+ *          beginShape → endShape
+ *
+ *  in sketch.js:
+ *      iterate through each vehicle. apply follow(path), separate(v's)
+ *      debug drawings based on const DEBUG
+ *
+ *  a vehicle pursuing the one following the path
+ *  groups of vehicles following path
  */
 
 
@@ -39,7 +51,7 @@ function setup() {
 
     vehicle = new Vehicle(100, 100)
     path = new Path(0, 200, width, 200)
-    vehicle.vel.x = 2
+    vehicle.vel.x = 1
 }
 
 function draw() {
@@ -47,13 +59,16 @@ function draw() {
     fill(201, 96, 83)
     strokeWeight(2)
 
+    /* seek a target */
     // target = new p5.Vector(mouseX, mouseY)
     // circle(target.x, target.y, 32)
+    // vehicle.seek(target)
+
+    path.end.y = mouseY
 
     let force = vehicle.follow(path)
     vehicle.applyForce(force)
 
-    // vehicle.seek(target)
     vehicle.edges()
     vehicle.update()
     vehicle.render()
